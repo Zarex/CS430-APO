@@ -21,7 +21,6 @@ $eventLocation = $_POST['eventLocation'];
 $publicNotes = $_POST['publicNotes'];
 $privateNotes = $_POST['privateNotes'];
 $recurring = $_POST['recurring'];
-$DOW = $_POST['DOW'];
 $startTime = $_POST['startTime'];
 $endTime = $_POST['endTime'];
 echo "<br/>.".$startTime.".<br/>.".$endTime.".<br/>";
