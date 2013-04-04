@@ -27,8 +27,9 @@ echo "<br/>.".$startTime.".<br/>.".$endTime.".<br/>";
 $max = $_POST['max'];
 $projectLeader = $_POST['projectLeader'];
 
-$theDate = $eventDate." ".$startTime.":00";
-echo $theDate;
+$startDate = $eventDate." ".$startTime.":00";
+echo $startDate;
+$endDate = $eventDate." ".$endTime.":00";
 echo "<br/>";
 
 // check to see if required items have values
@@ -49,13 +50,14 @@ if($recurring != NULL && ($startTime == NULL || $endTime == NULL)){
    	$db = newPDO();
    	$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
    	
-   	$sql = "INSERT INTO Event (Name,theDate,Description,Type,Location,publicNotes,privateNotes,Recurring,Fundraising)
-   			VALUES (:eventName,:theDate,:eventDescription,:type,:eventLocation,:publicNotes,:privateNotes,:Recurring,:Fundraising)";
+   	$sql = "INSERT INTO Event (Name,startDate,endDate,Description,Type,Location,publicNotes,privateNotes,Recurring,Fundraising)
+   			VALUES (:eventName,:startDate,:endDate,:eventDescription,:type,:eventLocation,:publicNotes,:privateNotes,:Recurring,:Fundraising)";
 
 	$stmt = $db->prepare($sql);
 
 	$stmt->execute(array(':eventName'=>$eventName,
-						 ':theDate'=>$theDate,
+						 ':startDate'=>$startDate,
+						 ':endDate'=>$endDate,
 						 ':eventDescription'=>$eventDescription,
 						 ':type'=>$type,
 						 ':eventLocation'=>$eventLocation,

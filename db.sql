@@ -121,7 +121,8 @@ An event is all shifts on a given day
 CREATE TABLE IF NOT EXISTS Event(
 E_Id int(6) NOT NULL AUTO_INCREMENT,
 Name varchar(64) NOT NULL,
-theDate datetime,
+startDate datetime,
+endDate datetime,
 Description varchar(320),
 Type int(6) NOT NULL,
 Location varchar(50) NOT NULL,
@@ -130,7 +131,7 @@ privateNotes varchar(320),
 Recurring char(1),
 Fundraising char(1),
 PRIMARY KEY (E_Id),
-UNIQUE KEY `event` (`E_Id`,`theDate`),
+UNIQUE KEY `event` (`E_Id`,`startDate`),
 FOREIGN KEY (Type) REFERENCES EventType(T_Id));
 /*
 INSERT INTO Event(Name, DOW, Description, Type, Location, publicNotes, privateNotes)
@@ -204,6 +205,7 @@ endTime datetime NOT NULL,
 Max int(3),
 eventStatus_Id int(3) NOT NULL DEFAULT '1',
 PRIMARY KEY (`P_Id`),
+UNIQUE KEY (S_Id),
 FOREIGN KEY (S_Id) REFERENCES Shift(S_Id),
 FOREIGN KEY (eventStatus_Id) REFERENCES EventStatus(ES_Id));
 /*
