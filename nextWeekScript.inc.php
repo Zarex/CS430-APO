@@ -10,7 +10,6 @@ function newPDO(){
 /*
  * Populate next week table
  * default eventStatus_Id = 1, 2= active, 3=canceled
- * Fri, push to occurrence table
  * Fri, push to occurrencqe table
  * clear next week table 
  */
