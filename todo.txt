@@ -72,8 +72,20 @@ GROUP BY FF.Name;
  FROM Occurrence AS O, Event AS E, EventType
  WHERE O.E_Id=E.E_Id AND EventType.T_Id=E.Type
 
-
-
+/* We use several similar VIEWS to display relevant data for 
+ * a list of hours completed by the user.
+ * Data is displayed on several pages throughout site
+ * 
+ * Variance occurs in name of view and line 7
+ */
+ CREATE VIEW Bought_Hours AS 
+ SELECT user_id AS id, SUM(hours) AS sum_hours
+ FROM recorded_hours 
+ WHERE semester = (SELECT option_value 
+                   FROM Options
+                   WHERE option_id = 3)
+ AND event = 'Bought Hours'
+ GROUP BY user_id;
 
 
 
