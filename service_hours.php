@@ -1,7 +1,6 @@
 <?php
 
 require_once('utility_functions.inc.php');
-$options = loadOptions();
 
 session_start();
 
@@ -21,6 +20,9 @@ function process_form() {
 	$servicetype = $_POST['servicetype'];
 	$fundraising = $_POST['fundraising'];
 	$semester = $_POST['semester'];
+	if(!isset($fundraising)){
+		$fundraising = 0;
+	}
 
 	$description = htmlspecialchars($description, ENT_QUOTES);
 	if ($month == NULL || $day == NULL || $event == NULL || $hours == NULL || $servicetype == NULL) {
@@ -55,27 +57,8 @@ function process_form() {
 return $result;
 }
 
-
-
-
-if(isset($_SESSION['id'])){
-	print_r($_SESSION);
-}else{
-	header("Location: http://localhost/login.php");
-	exit();
-}
-
-if(isset($_POST['action']) && ('add_hour' == $_POST['action'])){
-	$err = process_form();
-	echo $err;
-}else{
-	echo $_POST['action'];
-	echo "nothing processed";
-}
-
-print_form();
-
 function print_form(){
+	$options = loadOptions();
 	echo<<<END
 
 	<div style="clear:both;"></div>
@@ -216,8 +199,22 @@ function list_stats() {
 }
 	
 
+if(isset($_SESSION['id'])){
+	//print_r($_SESSION);
+}else{
+	header("Location: http://localhost/login.php");
+	exit();
+}
 
+if(isset($_POST['action']) && ('add_hour' == $_POST['action'])){
+	$err = process_form();
+	echo $err;
+}else{
+	//echo $_POST['action'];
+	//echo "nothing processed";
+}
 
+print_form();
 list_stats();
 
 
