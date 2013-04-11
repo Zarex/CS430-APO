@@ -1,25 +1,25 @@
 <?php
-function print_form()
-{
-echo<<<END
-<h1>Update Information</h1>
+require_once('utility_functions.inc.php');
 
-<p>Please make sure to update your Local Address and Littles each semester!</p>
-<p>If you wish to change your password, please go <a href="http://apo.truman.edu/members_updatepw.php">here</a>.</p>
-<form method="POST">
-<p>
-<b>Personal</b><br/>
-<label for="firstname">First Name</label> 
-<input type="text" name="firstname" value =""/>
-<br/>
+function print_form() { 
 
-<label for="lastname">Last Name</label> 
-<input type="text" name="lastname" value = ""/>
-<br/>
-
-<label for="birthday">Birthday</label>
-<select name="bmonth" id="bmonth"> 
-	<option value="$row[bmonth]">$bmonth</option> 
+echo <<<END
+	<div class="content">
+	
+	
+	<form method="POST"> 
+<p> 
+<b>Personal</b><br/> 
+<label for="first_name">First Name</label> 
+<input type="text" name="firstname" maxlenght="20" required/> 
+<br/> 
+ 
+<label for="last_name">Last Name</label> 
+<input type="text" name="lastname" maxlength="20" required/> 
+<br/> 
+ 
+<label for="birthday">Birthday</label> <!--be sure to concatenate in YYYY-MM-DD format-->
+<select name="bmonth" id="bmonth" required> 
 	<option value="01">January</option> 
 	<option value="02">February</option> 
 	<option value="03">March</option> 
@@ -33,174 +33,319 @@ echo<<<END
 	<option value="11">November</option> 
 	<option value="12">December</option> 
 </select> 
-<select name="bday" id="bday"> 
-    <option>$row[bday]</option>
-	<option>01</option> 
-	<option>02</option> 
-	<option>03</option> 
-	<option>04</option> 
-	<option>05</option> 
-	<option>06</option> 
-	<option>07</option> 
-	<option>08</option> 
-	<option>09</option> 
-	<option>10</option> 
-	<option>11</option> 
-	<option>12</option> 
-	<option>13</option> 
-	<option>14</option> 
-	<option>15</option> 
-	<option>16</option> 
-	<option>17</option> 
-	<option>18</option> 
-	<option>19</option> 
-	<option>20</option> 
-	<option>21</option> 
-	<option>22</option> 
-	<option>23</option> 
-	<option>24</option> 
-	<option>25</option> 
-	<option>26</option> 
-	<option>27</option> 
-	<option>28</option> 
-	<option>29</option> 
-	<option>30</option> 
-	<option>31</option> 
-</select> 
-<input name="byear" type="text" style="width: 50px;" maxlength="4" value="$row[byear]"/>
-<br/>
-
-<b>APO</b><br/>
-<label for="pledgesem">Pledge Semester</label>
-<select name="pledgesem"> 
-	<option value="$row[pledgesem]">$row[pledgesem]</option> 
-	<option value="Fall">Fall</option> 
-	<option value="Spring">Spring</option> 
-</select>
+<select name="bday" id="bday" required>
 END;
-echo '<select name="pledge_year">';
-$date = date('m-d-y');
-$year = date('Y', $date);
-for(int $i = 1900; $i<$year; $i++)
-{	
-	echo '<option value="$i">$i</option>'; 		
+for($i=1;$i<=31;$i++){
+  if($i<10){
+    $p = "0".$i;
+  } else {
+    $p = $i;
+  }
+  echo "<option value=$p>$i</option>"; 
+};
+echo <<<END
+</select>
+ 
+<select name="byear" id="byear" required>
+END;
+$year = date('Y');
+for($i=-27; $i<=-16; $i++){
+  echo "<option value=".($year+$i).">".($year+$i)."</option>";
+};
+echo <<<END
+</select> 
+<br/> 
+ 
+<b>APO</b><br/> 
+<label for="pledgesem">Pledge Semester</label> 
+<select name="pledgesem" required> 	
+  <option value="Spring">Spring</option> 
+	<option value="Fall">Fall</option> 
+</select> 
+
+<select name="pledgeyear" required>
+END;
+
+$year = date('Y');
+for($i=-6; $i<=0; $i++){
+  echo "<option value=".($year+$i).">".($year+$i)."</option>";
+};
+
+echo <<<END
+
+
+</select> 
+<br/> 
+
+<input type="hidden" name="status" value="1">
+<input type="hidden" name="flower" value="1">
+ 
+<b>School</b><br/> 
+<label name="major">Major</label> 
+<select name="major[]" multiple>
+END;
+
+$db = newPDO();
+$sql = "SELECT * FROM `Major`";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$majors = $stmt->fetchAll();
+
+
+foreach($majors as $row){
+	$id = $row['Major_Id'];
+	$name = $row['Name'];
+  echo "<option value=$id>$name</option>";
 }
-echo<<<END
-</select>
-<br/>
-
-<label for="family_flower">Flower</label> 
-<select name="family_flower">
-	<option>$row[famflower]</option> 
-	<option value="Pink Carnation">Pink Carnation</option> 
-	<option value="Red Carnation">Red Carnation</option>
-	<option value="Red Rose">Red Rose</option> 
-	<option value="White Carnation">White Carnation</option> 
-	<option value="White Rose">White Rose</option> 
-	<option value="Yellow Rose">Yellow Rose</option> 
-</select>
-<br/>
-
-<label for="status">Status</label> 
-<select name="status">
-	<option>$row[status]</option>
-	<option value="Active">Active</option>
-	<option value="Associate">Associate</option>
-	<option value="Pledge">Pledge</option> 
-	<option value="Alumni">Alumni</option> 
-	<option value="Early Alum">Early Alum</option> 
-	<option value="Exec">Executive</option>
-	<option value="Advisor">Advisor</option> 
-	<option value="Inactive">Inactive</option> 
-</select>
-<br/>
-
-<label for="bigbro">Big Brothers</label>
-<textarea name="bigbro">$row[bigbro]</textarea>
-<br/>
-
-<label for="lilbro">Little Brothers</label>
-<textarea name="littlebro">$row[littlebro]</textarea>
-<br/>
-
-<b>School</b><br/>
-<label name="major">Major</label>
-<input type="text" name="major" value="$row[major]"/>
-<br/>
+echo <<<END
+</select> 
+<br/> 
 
 <label for="minor">Minor</label> 
-<input type="text" name="minor" value="$row[minor]"/>
-<br/>
-
-<label for="grad_month">Graduation Date</label>
-<select name="grad_month"> 
-	<option>$row[gradmonth]</option> 
-	<option value="May">May</option> 
-	<option value="August">August</option> 
-	<option value="December">December</option> 
-</select>
-<select name="grad_year">
+<select name="minor[]" multiple <!--required-->>
 END;
-for(int $i=0; $i<$year+4; $i++)
-{
-	echo '<option value="2012">2012</option>';
+
+$db = newPDO();
+$sql = "SELECT * FROM `Minor`";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$majors = $stmt->fetchAll();
+
+
+foreach($majors as $row){
+	$id = $row['Minor_Id'];
+	$name = $row['Name'];
+  echo "<option value=$id>$name</option>";
 }
-echo<<<END
+
+echo <<<END
 </select>
-<br/>
-
-<label for="school_year">Year</label>
-<select name="school_year">
-	<option>$row[schoolyear]</option>
-	<option>Freshman</option>
-	<option>Sophomore</option>
-	<option>Junior</option>
-	<option>Senior</option>
-	<option>Alumni</option>
-	<option>Other</option>
-</select>
-<br/>
-
-<b>Contact</b><br/>
-<label for="email">Email</label>
-<input type="text" name="email" value="$row[email]"/>
-<br/>
-
-<label for="phone">Phone</label> 
-<input type="text" name="phone" value="$row[phone]"/>
-<br/>
-
-<label for="local">Local Address</label>
-<input type="text" name="local_address" value="$row[localaddress]"/>
-<br/>
-
-<label for="perm">Permanent Address</label> 
-<input type="text" name="homeaddress" value="$row[homeaddress]"/>
-<br/>
-
-<label for="perm"></label> 
-<input type="text" name="citystatezip" value="$row[citystatezip]"/>
-<br/>
-
-<b>Hide Contact Info</b><br/>
-Yes<input type="radio" name="hide_info" value="T" $selectedT/><br/>
-No<input type="radio" name="hide_info" value="F" $selectedF/>
-<br/>
-
-<input type="hidden" name="update" value="1"/>
-<p align='center'>
-<input type="submit" value="Update" style="font-size: 50px; border: 1px solid #FFCB46;"/>
-</p>
-</form>
+<br/> 
+ 
+<label for="gradsem">Graduation Date</label> 
+<select name="gradsem" required> 
+<option value="summer">Summer</option>
+<option value="spring">Spring</option>
+<option value="fall">Fall</option>
+</select> 
+<select name="gradyear" required>
 END;
-}
-function process_form()
-{
-	$stmt = $dbh->prepare("UPDATE 'Member' SET (firstname, lastname, email, phone, schoolyear, gradsem, gradyear,
-	pledgesem, pledgeyear, flowerid, bigbro, littlebro, statusid, position, birthday, activesem, riskmanagement,
-	hideinfo) VALUES (:name, :value)");
-);
+$year = date('Y');
+for($i=-1; $i<=6; $i++){
+  echo "<option value=".($year+$i).">".($year+$i)."</option>";
+};
+
+echo <<<END
+
+</select> 
+<br/> 
+ 
+<label for="schoolyear">Year</label> 
+<select name="schoolyear" required> 
+	<option value="1">Freshman</option> 
+	<option value="2">Sophomore</option> 
+	<option value="3">Junior</option> 
+	<option value="4">Senior</option> 
+	<option value="5">Alumni</option> 
+	<option value="6">Other</option> 
+</select> 
+<br/> 
+ 
+<b>Contact</b><br/> 
+<label for="email">Email</label> 
+<input type="text" name="email" required/> 
+<br/>
+<label for="phone">Phone</label>
+<input type="text" name="phone" maxlength="10"/> 
+ <!--
+<label for="ar">Phone</label> 
+<input type="text" name="ar" maxlength="3" pattern=[\d]{3}/> 
+  
+<input type="text" name="phone3d" maxlength="3" pattern=[\d]{3}/>
+ 
+<input type="text" name="phone4d" maxlength="4" pattern=[\d]{4}/>-->
+<br/> 
+ 
+<label for="local">Local Address*</label> 
+<input type="text" name="localaddress" maxlength="60" required/> 
+<br/> 
+ 
+<label for="perm"><b>Permanent Address:</b></label><br/>
+street #
+<input type="text" name="homeaddress" maxlength="60" required/> 
+<br/> 
+citystatezip
+<input type="text" name="citystatezip" maxlength="30" required/> 
+<br/> 
+END;
+/*
+
+creates array of usernames already in use
+$uquery = "SELECT username FROM `Member`";
+$r = $db->exec($uquery);
+
+$usernames = $r->fetchAll();*/
+echo <<<END
+<b>Login</b><br/>
+<label for="username">Username*</label>
+<input type="text" name="username" maxlength="15" onblur="var chk = <?= json_encode($usernames) ?>;var name = document.forms[username].value;for(var i=0;i<chk.length;i++){if(chk[i] == name){alert("The username"+name+"has already been selected, please try another.");}}" required/>
+<br/>
+
+<label for="password">Password*</label>
+<input type="password" name="password" required/>
+<br/>
+
+<label for="regpass">Registration PW*</label>
+<input type="text" name="regpass" />
+ 
+ 
+<input type="hidden" name="stage" value="process" />
+ 	<p align="left"><input type="submit" value="Submit" /></p>
+</form> 
+
+END;
+
 }
 
+function process_form() {
 
-?>
+	$firstname = $_POST['firstname']; 
+  $lastname = $_POST['lastname'];
+	$username = $_POST['username'];
+	$password = $_POST['password'];
+	$bday = $_POST['byear']."-".$_POST['bmonth']."-".$_POST['bday'];
+	
+	#contact
+	$homeaddress = $_POST['homeaddress'];
+	$citystatezip = $_POST['citystatezip'];
+	$localaddress = $_POST['localaddress'];
+	$email = $_POST['email'];
+	//$phone = "(".$_POST['ar'].") ".$_POST['phone3d']."-".$_POST['phone4d']; 
+	$phone = $_POST['phone'];
+    #school info
+	$schoolyear = $_POST['schoolyear'];
+	$major = $_POST['major'];
+	$minor = $_POST['minor'];
+	
+	$gradsem = $_POST['gradsem'];
+	$gradyear = $_POST['gradyear'];
+	 
+    $pledgesem = $_POST['pledgesem'];
+	$pledgeyear = $_POST['pledgeyear'];
+	
+	$status = $_POST['status'];
+	$flower = $_POST['flower'];
+	$regpass = $_POST['regpass'];
+	#value of 1 means nothing as of now need to create new table to hold
+	#auto_incrememted concurrent sems
+	$active_semester = 1;
+
+
+
+	$firstname = htmlspecialchars($firstname, ENT_QUOTES);
+	$lastname = htmlspecialchars($lastname, ENT_QUOTES);
+	$username = htmlspecialchars($username, ENT_QUOTES);
+	$password = htmlspecialchars($password, ENT_QUOTES);
+	$homeaddress = htmlspecialchars($homeaddress, ENT_QUOTES);
+	$citystatezip = htmlspecialchars($citystatezip, ENT_QUOTES);
+	$localaddress = htmlspecialchars($localaddress, ENT_QUOTES);
+	$email = htmlspecialchars($email, ENT_QUOTES);
+	$regpass = htmlspecialchars($regpass, ENT_QUOTES);
+
+	$password = md5($password);
+
+	if ($regpass == 'SpringRush2013') {
+
+		$db = newPDO();  
+
+		$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+
+
+		$sql =  "INSERT INTO `Member` ( firstname,lastname,username,password,email,Flower_Id,
+			phone,birthday,schoolyear,gradsem,gradyear,pledgesem,pledgeyear,Status_Id,active_sem) 
+		  VALUES (:fn,:ln,:un,:pass,:email,:flower,:phone,:birthday,:schoolyear,:gradsem,
+			:gradyear,:pledgesem,:pledgeyear,:Status_Id,:active_sem)";
+
+		$stmt = $db->prepare($sql);
+
+		$stmt->execute(array(':fn'=>$firstname,
+							':ln'=>$lastname,
+						    ':un'=>$username,
+					   	    ':pass'=>$password,
+						    ':email'=>$email,
+						    ':flower'=>$flower,
+						    ':phone'=>$phone,
+						    ':birthday'=>$bday,
+						    ':schoolyear'=>$schoolyear,
+						    ':gradsem'=>$gradsem,
+						    ':gradyear'=>$gradyear,
+						    ':pledgesem'=>$pledgesem,
+						    ':pledgeyear'=>$pledgeyear,
+						    ':Status_Id'=>$status,
+						    ':active_sem'=>$active_semester));
+
+	    print_r($stmt->errorInfo());
+		$affected_rows = $stmt->rowCount();
+		echo $affected_rows."<br/>";
+
+	  	$lastInsert = $db->lastInsertId();
+	  	echo $lastInsert;
+
+	  	$sql = "INSERT INTO `Address` (M_Id,homeaddress,citystatezip,localaddress)
+	  			VALUES (:id,:home,:citystatezip,:local)";
+
+	  	$stmt = $db->prepare($sql);
+
+	  	$stmt->execute(array(':id'=>$lastInsert,
+	  						':home'=>$homeaddress,
+	  						':citystatezip'=>$citystatezip,
+	  						':local'=>$localaddress));
+
+	  	print_r($stmt->errorInfo());
+		$affected_rows = $stmt->rowCount();
+		echo $affected_rows."<br/>";
+
+		$sql = "INSERT INTO MajorRoster (M_Id,Major_Id)
+					VALUES (:id,:m_id)";
+		$major_stmt = $db->prepare($sql);
+
+		$sql = "INSERT INTO MinorRoster (M_Id,Minor_Id)
+					VALUES (:id,:m_id)";
+		$minor_stmt = $db->prepare($sql);
+
+		foreach($major as $ma){
+			$major_stmt->execute(array(':id'=>$lastInsert,':m_id'=>$ma));
+			print_r($major_stmt->errorInfo());
+		}
+
+		foreach($minor as $mi){
+			$minor_stmt->execute(array(':id'=>$lastInsert,':m_id'=>$mi));
+			print_r($minor_stmt->errorInfo());
+		}
+
+echo <<<END
+		<div class="entry"><strong>Thank you for registering with APO-Epsilon!</strong></div>
+END;
+
+	} else {
+		echo '<div class="entry"><strong>Your registration password was incorrect.  Please try again.<br />If you do not know your registration pass please contact the webmaster.</strong></div>';
+		print_form();
+	}
+}
+
+//if this is the first time viewing the page, print the form
+//if not, process the form
+
+//require_once ('layout.php');
+//require_once ('mysql_access.php');
+//page_header();
+
+if (isset($_POST['stage']) && ('process' == $_POST['stage'])) { 
+   process_form(); 
+} else {
+	print_form(); 
+} 
+
+echo "</div>";
+//page_footer();
+ ?>
