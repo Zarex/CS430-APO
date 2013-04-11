@@ -111,10 +111,11 @@ VALUES (001, '1706 Kittyhawk Dr', 'Columbia, MO, 65201'),
 CREATE TABLE IF NOT EXISTS EventType(
 T_Id int(6) NOT NULL AUTO_INCREMENT,
 Name varchar(64) NOT NULL,
+Service char(1) NOT NULL DEFAULT '0',
 PRIMARY KEY (T_Id));
 
-INSERT INTO EventType(Name)
-VALUES ('Community'), ('Chapter'), ('Country'), ('Campus'), ('Brotherhood');
+INSERT INTO EventType(Name,Service)
+VALUES ('Community',1), ('Chapter',1), ('Country',1), ('Campus',1), ('Brotherhood',0);
 
 /*
 An event is all shifts on a given day
@@ -383,3 +384,40 @@ INSERT INTO MajorRoster(M_Id, Major_Id) VALUES
 INSERT INTO MinorRoster(M_Id, Minor_Id) VALUES
 ('1','4'),('3','3'),('4','2'),('4','5'),
 ('7','14'),('8','1'),('9','6'),('10','8');
+
+CREATE TABLE IF NOT EXISTS Options(
+option_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+option_name varchar(64) NOT NULL DEFAULT '',
+option_value longtext NOT NULL,
+autoload varchar(20) NOT NULL DEFAULT 'yes',
+PRIMARY KEY (option_id),
+UNIQUE KEY option_name(option_name));
+
+INSERT INTO `Options` (option_name,option_value)
+VALUES('siteurl', 'http://localhost'),
+('previous_semester', 'Fall 2012'),
+('current_semester', 'Spring 2013'),
+('next_semester','Fall 2013');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
