@@ -1,5 +1,5 @@
 /*
-Milestone 3
+DB
  
 Written By: 
 Logan McCamon
@@ -399,10 +399,76 @@ VALUES('siteurl', 'http://localhost'),
 ('current_semester', 'Spring 2013'),
 ('next_semester','Fall 2013');
 
+CREATE VIEW Total_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+GROUP BY user_id;
 
+CREATE VIEW APO_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND event != 'Non-APO Hours'
+GROUP BY user_id;
 
+CREATE VIEW Chapter_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND servicetype = 'Chapter'
+GROUP BY user_id;
 
+CREATE VIEW Campus_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND servicetype = 'Campus'
+GROUP BY user_id;
 
+CREATE VIEW Community_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND servicetype = 'Community'
+GROUP BY user_id;
+
+CREATE VIEW Country_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND servicetype = 'Country'
+GROUP BY user_id;
+
+CREATE VIEW Fundraising_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND fundraising = 1
+GROUP BY user_id;
+
+CREATE VIEW Bought_Hours AS 
+SELECT user_id AS id, SUM(hours) AS sum_hours
+FROM recorded_hours 
+WHERE semester = (SELECT option_value 
+                  FROM Options
+                  WHERE option_id = 3)
+AND event = 'Bought Hours'
+GROUP BY user_id;
 
 
 
