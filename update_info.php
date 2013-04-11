@@ -2,6 +2,17 @@
 require_once('utility_functions.inc.php');
 
 function print_form() { 
+$db = newPDO();
+$id = $_SESSION['sessionID'];
+$sql = "SELECT * FROM Member WHERE id = $id LIMIT 1";
+$stmt = $db->prepare($sql);
+$stmt->execute()
+//grabs all the user's information to use as defaults
+$user = $stmt->fetch();
+//stores different forms of birthday info to use as defaults
+$birthdayMonthNum = $user['birthday'].explode('-')[1];
+$birthdayMonthName = date("F", mktime(0, 0, 0, intval($birthdayMonthName), 10));
+$birthdayDay = $user['birthday'].explode('-')[2];
 
 echo <<<END
 	<div class="content">
@@ -11,15 +22,16 @@ echo <<<END
 <p> 
 <b>Personal</b><br/> 
 <label for="first_name">First Name</label> 
-<input type="text" name="firstname" maxlenght="20" required/> 
+<input type="text" name="firstname" value = "{$user['firstname']}" maxlenght="20" required/> 
 <br/> 
  
 <label for="last_name">Last Name</label> 
-<input type="text" name="lastname" maxlength="20" required/> 
+<input type="text" name="lastname" value = "{$user['lastname']}" maxlength="20" required/> 
 <br/> 
  
 <label for="birthday">Birthday</label> <!--be sure to concatenate in YYYY-MM-DD format-->
 <select name="bmonth" id="bmonth" required> 
+	<option value="{$birthdayMonthNum}">{$birthdayMonthName}</option>
 	<option value="01">January</option> 
 	<option value="02">February</option> 
 	<option value="03">March</option> 
@@ -34,6 +46,7 @@ echo <<<END
 	<option value="12">December</option> 
 </select> 
 <select name="bday" id="bday" required>
+	<option value="{$birthdayDay}">intval($birthdayDay)</option>
 END;
 for($i=1;$i<=31;$i++){
   if($i<10){
@@ -180,25 +193,6 @@ citystatezip
 END;
 /*
 
-creates array of usernames already in use
-$uquery = "SELECT username FROM `Member`";
-$r = $db->exec($uquery);
-
-$usernames = $r->fetchAll();*/
-echo <<<END
-<b>Login</b><br/>
-<label for="username">Username*</label>
-<input type="text" name="username" maxlength="15" onblur="var chk = <?= json_encode($usernames) ?>;var name = document.forms[username].value;for(var i=0;i<chk.length;i++){if(chk[i] == name){alert("The username"+name+"has already been selected, please try another.");}}" required/>
-<br/>
-
-<label for="password">Password*</label>
-<input type="password" name="password" required/>
-<br/>
-
-<label for="regpass">Registration PW*</label>
-<input type="text" name="regpass" />
- 
- 
 <input type="hidden" name="stage" value="process" />
  	<p align="left"><input type="submit" value="Submit" /></p>
 </form> 
