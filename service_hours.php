@@ -204,7 +204,7 @@ function list_stats() {
 	$db = newPDO();
 
 	foreach($array AS $tbl){
-	    	$sql = "SELECT sum_hours FROM $tbl WHERE id = 11";
+	    	$sql = "SELECT sum_hours FROM $tbl WHERE id = ".$_SESSION['id'];
 	    	$stmt = $db->prepare($sql);
 	    	$stmt->execute();
 	    	$var = $stmt->fetch();
