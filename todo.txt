@@ -21,6 +21,65 @@ FROM Event AS E
 
 /* Total number of hours completed by family flower
  */
+SELECT FF.Name, SUM(hours)
+FROM recorded_hours
+JOIN Member ON Member.id = recorded_hours.user_id
+JOIN FamilyFlower AS FF ON Member.Flower_Id = FF.Flower_Id
+GROUP BY FF.Name;
+
 
 /* Member roster, joining on address / Major
  */
+ SELECT * FROM Member 
+ JOIN Address 
+ JOIN FamilyFlower;
+
+/* activeMembers
+ * A list of all active members used by assign_leaders.php
+ */
+ SELECT id,firstname,lastname 
+ FROM Member
+ WHERE Status_Id = (SELECT Status_Id FROM Status
+ WHERE Name = 'Active')
+
+/* shiftListing
+ * A list of all shifts used by assign_leaders.php
+ */
+ SELECT S.S_Id AS S_Id,S.E_Id,S.startTime AS start,S.endTime AS end,
+ E.Name AS name,E.startDate AS dow
+ FROM Shift S 
+ JOIN Event E ON E.E_Id = S.E_Id
+
+/* An Insert statement used in our nextWeekScript.inc.php script 
+ *
+ * $dateValue = date('N');
+ * $dateValue -= 1;
+ * note: 1 (for Monday) through 7 (for Sunday)
+ */
+ INSERT NextWeek (S_Id,startTime,endTime,Max)
+ SELECT Shift.S_Id,Event.startDate,Event.endDate,Shift.Max 
+ FROM Shift
+ JOIN Event ON Event.E_Id = Shift.E_Id
+ WHERE (Event.startDate > (NOW()+6-$dateValue) 
+ AND Event.startDate < (NOW()+13-$dateValue)) 
+ OR Event.Recurring = 'T'
+
+/* List of all events for browse.php
+ * This is a user friendly output for sign-ups
+ */
+ SELECT E.E_Id,E.Name,E.DOW,E.Description,E.EventType.Name,E.Location,
+ E.publicNotes,E.privateNotes,O.startTime,O.endTime,O.Max,
+ FROM Occurrence AS O, Event AS E, EventType
+ WHERE O.E_Id=E.E_Id AND EventType.T_Id=E.Type
+
+
+
+
+
+
+
+
+
+
+
+
