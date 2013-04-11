@@ -1,7 +1,13 @@
 <?php
+function newPDO(){
+	$dsn = "mysql:host=localhost;dbname=CS430";
+	$user = "root";
+	$pass = "root";
+	return new PDO($dsn, $user, $pass);
+}
+
 function print_form() { 
-#$db = newPDO();  
-$db = 
+
 echo <<<END
 	<div class="content">
 	
@@ -32,25 +38,15 @@ echo <<<END
 	<option value="11">November</option> 
 	<option value="12">December</option> 
 </select> 
-<select name="bday" id="bday" required> 
-<?= $days=31?>
-<script>
-  var mon = document.forms["bmonth"].value;
-  if(mon == "02"){
-    <?= $days=29?>
-  }
-  if(mon == "04" || mon == "06" || mon == "09" || mon == "11"){
-    <?= $days=30?>
-  }
-</script>
+<select name="bday" id="bday" required>
 END;
-for($i=1;$i<=$days;$i++){
+for($i=1;$i<=31;$i++){
   if($i<10){
     $p = "0".$i;
   } else {
     $p = $i;
   }
-  echo "<option value=\"$p\">$i</option>"; 
+  echo "<option value=$p>$i</option>"; 
 };
 echo <<<END
 </select>
@@ -58,9 +54,8 @@ echo <<<END
 <select name="byear" id="byear" required>
 END;
 $year = date('Y');
-for($i=-25; $i<-16; $i++){
-  $year += $i;
-  echo "<option value=\"$year\">$year</option>";
+for($i=-27; $i<=-16; $i++){
+  echo "<option value=".($year+$i).">".($year+$i)."</option>";
 };
 echo <<<END
 </select> 
@@ -77,9 +72,8 @@ echo <<<END
 END;
 
 $year = date('Y');
-for($i=-4; $i<4; $i++){
-  $year += $i;
-  echo "<option value=\"$year\">$year</option>";
+for($i=-6; $i<=0; $i++){
+  echo "<option value=".($year+$i).">".($year+$i)."</option>";
 };
 
 echo <<<END
@@ -88,13 +82,14 @@ echo <<<END
 </select> 
 <br/> 
 
-<input type="hidden" name="status" value="0">
- 
+<input type="hidden" name="status" value="1">
+<input type="hidden" name="flower" value="1">
  
 <b>School</b><br/> 
 <label name="major">Major</label> 
-<select name="major[]" multiple required> 
+<select name="major[]" multiple <!--required-->> 
 END;
+/*
 #allows people to select multiple majors and stores it in an array to be passed to sql
 $q = "SELECT * FROM `Major`";
 $majors = $db->query($q) or die("Could not retrieve list of majors");
@@ -110,7 +105,7 @@ echo <<<END
 <br/> 
 
 <label for="minor">Minor</label> 
-<select name="minor[]" multiple required>
+<select name="minor[]" multiple <!--required-->>
 END;
 #allows people to select multiple minors and stores it in an array to be passed to sql
 $q = "SELECT * FROM `Minor`";
@@ -121,7 +116,7 @@ for($k=0;$k<sizeof($mn);$k++){
   $id = $mn[$k]['Major_Id'];
   $name = $mn[$K]['Name'];
   echo "<option value=\"$id\">$name</option>";
-}
+}*/
 echo <<<END
 </select>
 <br/> 
@@ -135,9 +130,8 @@ echo <<<END
 <select name="gradyear" required>
 END;
 $year = date('Y');
-for($i=0; $i<7; $i++){
-  $year += $i;
-  echo "<option value=\"$year\">$year</option>";
+for($i=-1; $i<=6; $i++){
+  echo "<option value=".($year+$i).">".($year+$i)."</option>";
 };
 
 echo <<<END
@@ -159,49 +153,53 @@ echo <<<END
 <b>Contact</b><br/> 
 <label for="email">Email</label> 
 <input type="text" name="email" required/> 
-<br/> 
- 
+<br/>
+<label for="phone">Phone</label>
+<input type="text" name="phone" maxlength="10"/> 
+ <!--
 <label for="ar">Phone</label> 
 <input type="text" name="ar" maxlength="3" pattern=[\d]{3}/> 
   
 <input type="text" name="phone3d" maxlength="3" pattern=[\d]{3}/>
  
-<input type="text" name="phone4d" maxlength="4" pattern=[\d]{4}/>
+<input type="text" name="phone4d" maxlength="4" pattern=[\d]{4}/>-->
 <br/> 
  
-<label for="local">Local Address</label> 
-<input type="text" name="localaddress" maxlength="60" pattern="[\w,']*" required/> 
+<label for="local">Local Address*</label> 
+<input type="text" name="localaddress" maxlength="60" required/> 
 <br/> 
  
-<label for="perm">Permanent Address</label> 
-<input type="text" name="homeaddress" maxlength="60" pattern="[\w,']*" required/> 
+<label for="perm"><b>Permanent Address:</b></label><br/>
+street #
+<input type="text" name="homeaddress" maxlength="60" required/> 
 <br/> 
- 
+citystatezip
 <input type="text" name="citystatezip" maxlength="30" required/> 
 <br/> 
 END;
-#creates array of usernames already in use
+/*
+
+creates array of usernames already in use
 $uquery = "SELECT username FROM `Member`";
 $r = $db->exec($uquery);
 
-$usernames = $r->fetchAll();
+$usernames = $r->fetchAll();*/
 echo <<<END
 <b>Login</b><br/>
 <label for="username">Username*</label>
 <input type="text" name="username" maxlength="15" onblur="var chk = <?= json_encode($usernames) ?>;var name = document.forms[username].value;for(var i=0;i<chk.length;i++){if(chk[i] == name){alert("The username"+name+"has already been selected, please try another.");}}" required/>
 <br/>
 
-<label for="password">Password</label>
+<label for="password">Password*</label>
 <input type="password" name="password" required/>
 <br/>
 
-<label for="regpass">Registration PW</label>
+<label for="regpass">Registration PW*</label>
 <input type="text" name="regpass" />
  
  
 <input type="hidden" name="stage" value="process" />
-  
- 		<p align="center"><input type="submit" value="Register" /></p>
+ 	<p align="left"><input type="submit" value="Submit" /></p>
 </form> 
 
 END;
@@ -221,9 +219,9 @@ function process_form() {
 	$citystatezip = $_POST['citystatezip'];
 	$localaddress = $_POST['localaddress'];
 	$email = $_POST['email'];
-	$phone = "(".$_POST['ar'].") ".$_POST['phone3d']."-".$_POST['phone4d']; 
-
-  #school info
+	//$phone = "(".$_POST['ar'].") ".$_POST['phone3d']."-".$_POST['phone4d']; 
+	$phone = $_POST['phone'];
+    #school info
 	$schoolyear = $_POST['schoolyear'];
 	$major = $_POST['major'];
 	$minor = $_POST['minor'];
@@ -231,10 +229,11 @@ function process_form() {
 	$gradsem = $_POST['gradsem'];
 	$gradyear = $_POST['gradyear'];
 	 
-  $pledgesem = $_POST['pledgesem'];
+    $pledgesem = $_POST['pledgesem'];
 	$pledgeyear = $_POST['pledgeyear'];
 	
 	$status = $_POST['status'];
+	$flower = $_POST['flower'];
 	$regpass = $_POST['regpass'];
 	#value of 1 means nothing as of now need to create new table to hold
 	#auto_incrememted concurrent sems
@@ -256,27 +255,67 @@ function process_form() {
 
 	if ($regpass == 'SpringRush2013') {
 
-	  
-		$insert = 
-		  "INSERT INTO `Member` (
-		  firstname, lastname, username, password, homeaddress, citystatezip, 
-		  localaddress, email, phone, birthday, schoolyear, gradsem, 
-		  gradyear, pledgesem, pledgeyear, Status_Id, active_sem) 
-		  VALUES(
-		  '$firstname','$lastname','$username', '$password', '$homeaddress', '$citystatezip', 
-		  '$localaddress', '$email', '$phone','$bday', '$schoolyear', 
-		  '$gradsem', '$gradyear', '$pledgesem', '$pledgeyear', 
-		  '$status','$active_semester')";
-		  
-		$ex = $db->prepare($insert);
-	  $ex->execute() or die("Some value in insert is invalid");
-	  
-	  #must create whole user before we can use their auto generated id to populate other tables
-	  $db->beginTransaction();
+		$db = newPDO();  
 
-	    
-	  $id = "SELECT id FROM `member` WHERE username = '$username'";  
-	  
+		$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+   	
+
+
+
+
+
+		$sql =  "INSERT INTO `Member` ( firstname,lastname,username,password,email,Flower_Id,
+			phone,birthday,schoolyear,gradsem,gradyear,pledgesem,pledgeyear,Status_Id,active_sem) 
+		  VALUES (:fn,:ln,:un,:pass,:email,:flower,:phone,:birthday,:schoolyear,:gradsem,
+			:gradyear,:pledgesem,:pledgeyear,:Status_Id,:active_sem)";
+
+		$stmt = $db->prepare($sql);
+
+		/* 	$homeaddress
+			$citystatezip
+			$localaddress
+		*/
+		$stmt->execute(array(':fn'=>$firstname,
+							':ln'=>$lastname,
+						    ':un'=>$username,
+					   	    ':pass'=>$password,
+						    ':email'=>$email,
+						    ':flower'=>$flower,
+						    ':phone'=>$phone,
+						    ':birthday'=>$bday,
+						    ':schoolyear'=>$schoolyear,
+						    ':gradsem'=>$gradsem,
+						    ':gradyear'=>$gradyear,
+						    ':pledgesem'=>$pledgesem,
+						    ':pledgeyear'=>$pledgeyear,
+						    ':Status_Id'=>$status,
+						    ':active_sem'=>$active_semester));
+
+	    print_r($stmt->errorInfo());
+		$affected_rows = $stmt->rowCount();
+		echo $affected_rows."<br/>";
+
+	  	$lastInsert = $db->lastInsertId();
+	  	echo $lastInsert;
+
+	  	$sql = "INSERT INTO `Address` (M_Id,homeaddress,citystatezip,localaddress)
+	  			VALUES (:id,:home,:citystatezip,:local)";
+
+	  	$stmt = $db->prepare($sql);
+
+	  	$stmt->execute(array(':id'=>$lastInsert,
+	  						':home'=>$homeaddress,
+	  						':citystatezip'=>$citystatezip,
+	  						':local'=>$localaddress));
+
+	  	print_r($stmt->errorInfo());
+		$affected_rows = $stmt->rowCount();
+		echo $affected_rows."<br/>";
+
+
+	  /* continue cleaning up major minor data*/
+
+	  /*
 	  #grabs all majors and minors that someone selected
 		for($i=0;$i<sizeof($major);$i++){
 		  $mjin = "INSERT INTO `MajorRoster` (M_Id,Major_Id) VALUES ('$id','$major[$i]')";
@@ -294,7 +333,7 @@ function process_form() {
 		$ex1 = $db->prepare($addin);
 		$ex1->execute();
 		$db->commit();
-		
+		*/
 		/*
 		echo($query2);
 

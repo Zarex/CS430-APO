@@ -20,6 +20,7 @@ UNIQUE KEY `FamilyFlower` (`Name`));
 /* */
 INSERT INTO FamilyFlower(Name)
 VALUES
+('Wrath'),
 ('Red Carnation'),
 ('Red Rose'),
 ('Yellow Rose'),
@@ -52,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `Member` (
   `gradyear` int(4) NOT NULL,
   `pledgesem` varchar(6) NOT NULL,
   `pledgeyear` int(4) NOT NULL,
-  `Flower_Id` int(2) NOT NULL, 
+  `Flower_Id` int(2) NOT NULL DEFAULT '1', 
   `bigbro` varchar(100) NOT NULL DEFAULT '', 
   `littlebro` varchar(100),
   `Status_Id` int(2) NOT NULL DEFAULT '0',
@@ -133,13 +134,17 @@ Fundraising char(1),
 PRIMARY KEY (E_Id),
 UNIQUE KEY `event` (`E_Id`,`startDate`),
 FOREIGN KEY (Type) REFERENCES EventType(T_Id));
-/*
-INSERT INTO Event(Name, DOW, Description, Type, Location, publicNotes, privateNotes)
-VALUES ('Ray Miller','Mon','Tutor kids',1,'CD','meet 15 minutes prior','none'),
-       ('Ray Miller','Wed','Tutor kids',1,'CD','meet 15 minutes prior','none'),
-       ('Ray Miller','Thu','Tutor kids',1,'CD','meet 15 minutes prior','none'),
-       ('Ray Miller','Fri','Tutor kids',1,'CD','meet 15 minutes prior','none');
-*/
+
+INSERT INTO Event(Name, startDate, endDate, Description, Type, Location, publicNotes, privateNotes)
+VALUES ('Ray Miller','2013-04-15 16:00:00','2013-04-15 18:00:00','Tutor kids',1,'CD','meet 15 minutes prior','none'),
+       ('Ray Miller','2013-04-17 16:00:00','2013-04-17 18:00:00','Tutor kids',1,'CD','meet 15 minutes prior','none'),
+       ('Ray Miller','2013-04-18 16:00:00','2013-04-18 17:00:00','Tutor kids',1,'CD','meet 15 minutes prior','none'),
+       ('Ray Miller','2013-04-19 16:00:00','2013-04-19 18:00:00','Tutor kids',1,'CD','meet 15 minutes prior','none'),
+       ('Twin Pines','2013-04-16 17:00:00','2013-04-16 19:00:00','Mingle with elderly',1,'CD','meet 15 minutes prior','none'),
+       ('Twin Pines','2013-04-18 17:00:00','2013-04-18 19:00:00','Mingle with elderly',1,'CD','meet 15 minutes prior','none'),
+       ('Campus Cleanup','2013-04-20 13:30:00','2013-04-20 16:30:00','Clean up trash on campus',4,'CD','meet 15 minutes prior','none'),
+       ('Campus Cleanup','2013-04-21 13:30:00','2013-04-21 16:30:00','Clean up trash on campus',4,'CD','meet 15 minutes prior','none');
+
 
 /*
 
@@ -152,15 +157,23 @@ endTime time,
 Max int(3),
 PRIMARY KEY(`S_Id`),
 FOREIGN KEY (E_Id) REFERENCES Event(E_Id));
-/*
+
 INSERT INTO Shift (E_Id, startTime, endTime, Max)
 VALUES (1, '16:00:00', '17:00:00', 5),
        (1, '17:00:00', '18:00:00', 5),
        (2, '16:00:00', '17:00:00', 3),
        (3, '16:00:00', '17:00:00', 5),
        (4, '16:00:00', '17:00:00', 5),
-       (4, '17:00:00', '18:00:00', 9);
-*/
+       (4, '17:00:00', '18:00:00', 10),
+       (5, '17:00:00', '18:00:00', 10),
+       (5, '18:00:00', '19:00:00', 10),
+       (6, '17:00:00', '18:00:00', 10),
+       (6, '18:00:00', '19:00:00', 10),
+       (7, '13:30:00', '15:00:00', 10),
+       (7, '15:00:00', '16:30:00', 10),
+       (8, '13:30:00', '15:00:00', 10),
+       (8, '15:00:00', '16:30:00', 10);
+
 CREATE TABLE IF NOT EXISTS Leader(
 M_Id int(6),
 S_Id int(6),
@@ -180,23 +193,55 @@ VALUES('Active'),('Canceled');
 */
 CREATE TABLE IF NOT EXISTS Occurrence(
 O_Id int(6) NOT NULL AUTO_INCREMENT,
-S_Id int(6),
+E_Id int(6),
 startTime	datetime NOT NULL,
 endTime	datetime NOT NULL,
 Max int(3),
 eventStatus_Id int(3) NOT NULL DEFAULT '1',
 PRIMARY KEY(`O_Id`),
-FOREIGN KEY (S_Id) REFERENCES Shift(S_Id),
+FOREIGN KEY (E_Id) REFERENCES Event(E_Id),
 FOREIGN KEY (eventStatus_Id) REFERENCES EventStatus(ES_Id));
-/*
+
 INSERT INTO Occurrence (E_Id, startTime, endTime, Max)
 VALUES (1, '2013-04-03 16:10:00', '2013-04-03 17:00:00', 5),
        (1, '2013-04-03 17:00:00', '2013-04-03 18:00:00', 5),
        (2, '2013-04-03 16:00:00', '2013-04-03 17:00:00', 3),
        (3, '2013-04-03 16:00:00', '2013-04-03 17:00:00', 5),
        (4, '2013-04-03 16:00:00', '2013-04-03 16:40:00', 5),
-       (4, '2013-04-03 16:40:00', '2013-04-03 18:00:00', 10);
-*/
+       (4, '2013-04-03 16:40:00', '2013-04-03 18:00:00', 10),
+       (7, '2013-04-20 13:30:00', '2013-04-20 15:00:00', 10),
+       (7, '2013-04-20 15:00:00', '2013-04-20 16:30:00', 10),
+       (8, '2013-04-21 13:30:00', '2013-04-21 15:00:00', 10),
+       (8, '2013-04-21 15:00:00', '2013-04-21 16:30:00', 10),
+       (1, '2013-04-22 16:10:00', '2013-04-22 17:00:00', 5),
+       (1, '2013-04-22 17:00:00', '2013-04-22 18:00:00', 5),
+       (5, '2013-04-23 17:00:00', '2013-04-23 18:00:00', 10),
+       (5, '2013-04-23 18:00:00', '2013-04-23 19:00:00', 10),
+       (2, '2013-04-24 16:00:00', '2013-04-24 17:00:00', 3),
+       (3, '2013-04-25 16:00:00', '2013-04-25 17:00:00', 5),
+       (6, '2013-04-25 17:00:00', '2013-04-25 18:00:00', 10),
+       (6, '2013-04-25 18:00:00', '2013-04-25 19:00:00', 10),
+       (4, '2013-04-26 16:00:00', '2013-04-26 16:40:00', 5),
+       (4, '2013-04-26 16:40:00', '2013-04-26 18:00:00', 10),
+       (7, '2013-04-27 13:30:00', '2013-04-27 15:00:00', 10),
+       (7, '2013-04-27 15:00:00', '2013-04-27 16:30:00', 10),
+       (8, '2013-04-28 13:30:00', '2013-04-28 15:00:00', 10),
+       (8, '2013-04-28 15:00:00', '2013-04-28 16:30:00', 10),
+       (1, '2013-04-29 16:10:00', '2013-04-29 17:00:00', 5),
+       (1, '2013-04-29 17:00:00', '2013-04-29 18:00:00', 5),
+       (5, '2013-04-30 17:00:00', '2013-04-30 18:00:00', 10),
+       (5, '2013-04-30 18:00:00', '2013-04-30 19:00:00', 10),
+       (2, '2013-05-01 16:00:00', '2013-05-01 17:00:00', 3),
+       (3, '2013-05-02 16:00:00', '2013-05-02 17:00:00', 5),
+       (6, '2013-05-02 17:00:00', '2013-05-02 18:00:00', 10),
+       (6, '2013-05-02 18:00:00', '2013-05-02 19:00:00', 10),
+       (4, '2013-05-03 16:00:00', '2013-05-03 16:40:00', 5),
+       (4, '2013-05-03 16:40:00', '2013-05-03 18:00:00', 10),
+       (7, '2013-05-04 13:30:00', '2013-05-04 15:00:00', 10),
+       (7, '2013-05-04 15:00:00', '2013-05-04 16:30:00', 10),
+       (8, '2013-05-05 13:30:00', '2013-05-05 15:00:00', 10),
+       (8, '2013-05-05 15:00:00', '2013-05-05 16:30:00', 10);
+
 CREATE TABLE IF NOT EXISTS NextWeek(
 P_Id int(6) NOT NULL AUTO_INCREMENT,
 S_Id int(6),
@@ -223,7 +268,7 @@ Name    varchar(24) NOT NULL,
 PRIMARY KEY (Proccessed_Id));
 
 INSERT INTO Processed (Name)
-VALUES ('Not Yet Processed');
+VALUES ('Not Yet Processed'),('Recorded'),('Absent');
 
 CREATE TABLE IF NOT EXISTS `recorded_hours` (
   `index` int(4) NOT NULL AUTO_INCREMENT,
@@ -251,11 +296,12 @@ Processed 	int(1),
 FOREIGN KEY (M_Id) REFERENCES Member(id),
 FOREIGN KEY (O_Id) REFERENCES Occurrence(O_Id),
 FOREIGN KEY (Processed) REFERENCES Processed(Proccessed_Id));
-/*
-INSERT INTO Volunteer(O_Id,M_Id,Processed)
-VALUES (1,1,1),(3,2,1),(1,2,1),(1,3,1),(4,1,1);
 
-*/
+INSERT INTO Volunteer(O_Id,M_Id,Processed)
+VALUES (1,1,2),(3,2,3),(1,2,2),(1,3,2),(4,1,3),
+       (20,1,1),(20,3,1);
+
+
 CREATE TABLE IF NOT EXISTS SchoolYear(
 SchoolYear 	int(1) NOT NULL AUTO_INCREMENT,
 Name		varchar(32),
@@ -296,3 +342,44 @@ M_Id		int(6),
 Minor_Id		int(3),
 UNIQUE KEY `MinorRoster` (`M_Id`,`Minor_Id`),
 FOREIGN KEY (Minor_Id) REFERENCES Minor(Minor_Id));
+
+INSERT INTO Major(Name) VALUES 
+('Accounting'),
+('Agricultural Science'),
+('Art'),
+('Athletic Training'),
+('Biology'),
+('Business Administration'),
+('Chemistry'),
+('Classics'),
+('Communication'),
+('Communication Disorders'),
+('Computer Science'),
+('Creative Writing'),
+('Economics');
+
+INSERT INTO Minor(Name) VALUES
+('Actuarial Science'),
+('African/African American Studies'),
+('Agricultural Business'),
+('Agricultural Studies'),
+('Anthropology'),
+('Art History'),
+('Art Studio'),
+('Asian Studies'),
+('Biology'),
+('Business Administration'),
+('Chemistry'),
+('Classical Studies'),
+('Cognitive Science'),
+('Communication'),
+('Computer Science');
+
+INSERT INTO MajorRoster(M_Id, Major_Id) VALUES
+('1','3'),('1','7'),('2','6'), ('3','13'),('3','2'),
+('4','10'),('5','9'),('6','1'),('6','5'),('7','7'),
+('8','4'),('9','11'),('9','12'),('10','8');
+
+INSERT INTO MinorRoster(M_Id, Minor_Id) VALUES
+('1','4'),('3','3'),('4','2'),('4','5'),
+('7','14'),('8','1'),('9','6'),('10','8');
