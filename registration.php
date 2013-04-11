@@ -1,10 +1,5 @@
 <?php
-function newPDO(){
-	$dsn = "mysql:host=localhost;dbname=CS430";
-	$user = "root";
-	$pass = "root";
-	return new PDO($dsn, $user, $pass);
-}
+require_once('utility_functions.inc.php');
 
 function print_form() { 
 
@@ -87,18 +82,20 @@ echo <<<END
  
 <b>School</b><br/> 
 <label name="major">Major</label> 
-<select name="major[]" multiple <!--required-->> 
+<select name="major[]" multiple>
 END;
-/*
-#allows people to select multiple majors and stores it in an array to be passed to sql
-$q = "SELECT * FROM `Major`";
-$majors = $db->query($q) or die("Could not retrieve list of majors");
-$m = $majors->fetchAll(PDO::FETCH_ASSOC);
 
-for($k=0;$k<sizeof($m);$k++){
-  $id = $m[$k]['Major_Id'];
-  $name = $m[$K]['Name'];
-  echo "<option value=\"$id\">$name</option>";
+$db = newPDO();
+$sql = "SELECT * FROM `Major`";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$majors = $stmt->fetchAll();
+
+
+foreach($majors as $row){
+	$id = $row['Major_Id'];
+	$name = $row['Name'];
+  echo "<option value=$id>$name</option>";
 }
 echo <<<END
 </select> 
@@ -107,16 +104,20 @@ echo <<<END
 <label for="minor">Minor</label> 
 <select name="minor[]" multiple <!--required-->>
 END;
-#allows people to select multiple minors and stores it in an array to be passed to sql
-$q = "SELECT * FROM `Minor`";
-$minors = $db->query($q) or die ("Could not retrieve list of minors");
-$mn = $minors->fetchAll(PDO::FETCH_ASSOC);
 
-for($k=0;$k<sizeof($mn);$k++){
-  $id = $mn[$k]['Major_Id'];
-  $name = $mn[$K]['Name'];
-  echo "<option value=\"$id\">$name</option>";
-}*/
+$db = newPDO();
+$sql = "SELECT * FROM `Minor`";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$majors = $stmt->fetchAll();
+
+
+foreach($majors as $row){
+	$id = $row['Minor_Id'];
+	$name = $row['Name'];
+  echo "<option value=$id>$name</option>";
+}
+
 echo <<<END
 </select>
 <br/> 
@@ -251,17 +252,13 @@ function process_form() {
 	$email = htmlspecialchars($email, ENT_QUOTES);
 	$regpass = htmlspecialchars($regpass, ENT_QUOTES);
 
-
+	$password = md5($password);
 
 	if ($regpass == 'SpringRush2013') {
 
 		$db = newPDO();  
 
 		$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
-   	
-
-
-
 
 
 		$sql =  "INSERT INTO `Member` ( firstname,lastname,username,password,email,Flower_Id,
@@ -271,10 +268,6 @@ function process_form() {
 
 		$stmt = $db->prepare($sql);
 
-		/* 	$homeaddress
-			$citystatezip
-			$localaddress
-		*/
 		$stmt->execute(array(':fn'=>$firstname,
 							':ln'=>$lastname,
 						    ':un'=>$username,
@@ -312,38 +305,26 @@ function process_form() {
 		$affected_rows = $stmt->rowCount();
 		echo $affected_rows."<br/>";
 
+		$sql = "INSERT INTO MajorRoster (M_Id,Major_Id)
+					VALUES (:id,:m_id)";
+		$major_stmt = $db->prepare($sql);
 
-	  /* continue cleaning up major minor data*/
+		$sql = "INSERT INTO MinorRoster (M_Id,Minor_Id)
+					VALUES (:id,:m_id)";
+		$minor_stmt = $db->prepare($sql);
 
-	  /*
-	  #grabs all majors and minors that someone selected
-		for($i=0;$i<sizeof($major);$i++){
-		  $mjin = "INSERT INTO `MajorRoster` (M_Id,Major_Id) VALUES ('$id','$major[$i]')";
-		  $db->exec($mjin);
+		foreach($major as $ma){
+			$major_stmt->execute(array(':id'=>$lastInsert,':m_id'=>$ma));
+			print_r($major_stmt->errorInfo());
 		}
-		for($i=0;$i<sizeof($minor);$i++){
-		  $mnin = "INSERT INTO `MinorRoster` (M_Id,Minor_Id) VALUES ('$id','$minor[$i]')";
-		  $db->exec($mjin);
+
+		foreach($minor as $mi){
+			$minor_stmt->execute(array(':id'=>$lastInsert,':m_id'=>$mi));
+			print_r($minor_stmt->errorInfo());
 		}
-		
-		$addin = 
-		"INSERT INTO `Address`(M_Id, homeaddress, citystatezip, localaddress)
-		VALUES('$id','$homeaddress','$citystatezip','$localaddress')";
-		
-		$ex1 = $db->prepare($addin);
-		$ex1->execute();
-		$db->commit();
-		*/
-		/*
-		echo($query2);
-
-		$query2 = mysql_query($insert) or die('<br/><div class="entry"><strong>Your username is already taken.  Please try again.</strong></div>');
-*/
-
-
 
 echo <<<END
-		<div class="entry"><strong>Thank you for registering with APO-Epsilon!!!</strong></div>
+		<div class="entry"><strong>Thank you for registering with APO-Epsilon!</strong></div>
 END;
 
 	} else {

@@ -1,11 +1,5 @@
 <?
-
-function newPDO(){
-	$dsn = "mysql:host=localhost;dbname=CS430";
-	$user = "root";
-	$pass = "root";
-	return new PDO($dsn, $user, $pass);
-}
+require_once('utility_functions.inc.php');
 
 function validateForm(){
 	$m_id = $_POST['member'];
