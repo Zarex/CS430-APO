@@ -1,0 +1,26 @@
+/* number of volunteers
+ * name of event
+ * start and end datetime
+ * max volunteers for occurrence
+ */
+SELECT E.Name AS name,O.startTime AS start,O.endTime AS end,O.Max AS max,O.O_Id AS O_Id,(SELECT COUNT(*) FROM Volunteer WHERE O_Id = O.O_Id) AS m
+FROM Occurrence AS O 
+JOIN Event AS E ON E.E_Id = O.E_Id
+LEFT OUTER JOIN Volunteer AS V ON V.O_Id = O.O_Id
+WHERE O.startTime >= NOW() 
+GROUP BY O.O_Id
+ORDER BY m DESC,startTime ASC
+
+/* Number of shifts per event, over the whole week or by day
+ * Mikey and I gave up on this for now. working on last two 
+ * currently listed.
+ */
+SELECT E.Name, (SELECT COUNT(*) FROM Shift WHERE E_Id = E.E_Id) AS m
+FROM Event AS E
+
+
+/* Total number of hours completed by family flower
+ */
+
+/* Member roster, joining on address / Major
+ */
