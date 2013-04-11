@@ -3,8 +3,13 @@
 require_once('utility_functions.inc.php');
 $options = loadOptions();
 
+session_start();
+
 function process_form() {	
-	$id = $_SESSION['sessionID'];
+
+	$result = 'sucess';
+
+	$id = $_SESSION['id'];
 	$event = $_POST['event'];
 	$month = $_POST['month']; 
     $day = $_POST['day'];
@@ -25,39 +30,50 @@ function process_form() {
 		$result = "<div class='entry'>The description cannot be the same as the event. Please enter a valid description so that exec can verify that you did the service hours. <br/></div>";
 	}
 	else {
-		$insert = "INSERT INTO apo.recorded_hours (user_id, event, month, day, year, date, description, hours, servicetype, fundraising, semester) values('$id', '$event', '$month','$day', '$year', '$date', '$description', '$hours', '$servicetype', '$fundraising', '$semester');";
-		$query2 = mysql_query($insert) or die("If you encounter problems, please contact the webmaster. ".mysql_error()." ".mysql_errno()." ".$insert);
-		$result = '1';
-			if($fundraising == 1){//also ads fundraising hours to another DB so we can see who the first 30 were.
-				$sql5 = "SELECT * FROM `first_30`";	
-					$result5 = mysql_query($sql5);
-			if($result5 < 30){
-				$sql1 = "SELECT hours FROM `first_30` WHERE id = '".$id."'";
-					$result1 = mysql_query($sql1);
-						if($result1){
-						while($row = mysql_fetch_array($result1)) { 
-							$hours_pre = $row['hours'];
-							$hn = $hours_pre+$hours;}}
-			if($hours_pre <= 2){
-				$sql2 = "INSERT INTO `first_30` (id, hours) VALUES ('$id', '$hours') ON DUPLICATE KEY UPDATE hours = '".$hn."'";
-					$result2 = mysql_query($sql2);}
-					}
-			}
-END;	
+		
+		$db = newPDO();
+
+		$sql = "INSERT INTO recorded_hours (user_id,date,semester,description,hours,
+							servicetype,fundraising,event)
+				VALUES(:user_id,:thedate,:semester,:description,:hours,:servicetype,
+						:fundraising,:event)";
+		$stmt = $db->prepare($sql);
+
+		$stmt->execute(array(':user_id'=>$id,
+							 ':thedate'=>$date,
+							 ':semester'=>$semester,
+							 ':description'=>$description,
+							 ':hours'=>$hours,
+							 ':servicetype'=>$servicetype,
+							 ':fundraising'=>$fundraising,
+							 ':event'=>$event));
+
+		print_r($stmt->errorInfo());
+
+
 	}
 return $result;
 }
-?>
-<div class="content">
 
-<?php	
+
+
+
+if(isset($_SESSION['id'])){
+	print_r($_SESSION);
+}else{
+	header("Location: http://localhost/login.php");
+	exit();
+}
+
+if(isset($_POST['action']) && ('add_hour' == $_POST['action'])){
+	$err = process_form();
+	echo $err;
+}else{
+	echo $_POST['action'];
+	echo "nothing processed";
+}
+
 echo<<<END
-<h1>Service Hours</h1>
-<h3>Check your hours from previous semesters <a href="http://apo.truman.edu/service_hours_history.php">here</a></h3>
-<h3>Regular Service has been moved! Please Sign-Up <a href="http://apo.truman.edu/service_dashboard.php">here</a></h3>
-<h3>You DO NOT have to record regular service hours</h3>
-
-</div>
 
 <div style="clear:both;"></div>
 
@@ -66,7 +82,7 @@ echo<<<END
 <table><tr><td rowspan='2' valign='top'>
 <div id="service_log">
 <h2>Log Hours</h2> 
-<form action="service_hours_new.php" class="form" id="new_volunteer_time" method="post">
+<form action="" method="POST"> 
 <p>
 	<label for="month">Date</label> 
 		<select name="month">
@@ -159,17 +175,11 @@ echo<<<END
 <h2>Service Policy</h2>
 
 Active: <b>25</b> hours of service.<br>
-
 <b>18</b> hours must be APO service hours.<br>
-
 <b>3</b> out of the 4 fields of service: Chapter, Campus, Community, Country.<br>
-
 <b>3</b> hours of fundraising.<br>
-
 Maximum of <b>5</b> bought hours<br>
-
 Associate: <b>12.5</b> hours of service <br>
-
 9 hours must be APO service hours
 </div>
 </td></tr>
