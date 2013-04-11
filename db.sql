@@ -390,7 +390,8 @@ INSERT INTO `Options` (option_name,option_value)
 VALUES('siteurl', 'http://localhost'),
 ('previous_semester', 'Fall 2012'),
 ('current_semester', 'Spring 2013'),
-('next_semester','Fall 2013');
+('next_semester','Fall 2013'),
+('activation_date', '04-26-2013');
 
 CREATE VIEW Total_Hours AS 
 SELECT user_id AS id, SUM(hours) AS sum_hours
